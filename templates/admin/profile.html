@@ -1,0 +1,67 @@
+{% extends "admin/layout.html" %}
+{% block title %}Profile{% endblock %}
+{% block head_extra %}{{ super() }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/easymde/2.18.0/easymde.min.css">
+{% endblock %}
+{% block admin_content %}
+{% from "partials/uploader.html" import uploader %}
+<h1 class="text-2xl font-bold text-slate-900 dark:text-white">Profile &amp; hero</h1>
+<p class="mt-1 text-sm text-slate-500">Shown on the home page, navigation, footer and SEO tags.</p>
+
+<form method="post" action="/admin/profile" class="mt-6 grid gap-8 lg:grid-cols-[1fr_320px]" data-dirty-guard>
+  <div class="space-y-5">
+    <div class="grid gap-5 sm:grid-cols-2">
+      <label class="block text-sm font-medium">Name
+        <input name="name" required value="{{ profile.name }}" class="{{ ui.input }}">
+      </label>
+      <label class="block text-sm font-medium">Headline
+        <input name="headline" value="{{ profile.headline }}" class="{{ ui.input }}">
+      </label>
+    </div>
+    <label class="block text-sm font-medium">Short bio <span class="font-normal text-slate-500">(hero + meta description)</span>
+      <textarea name="bio" rows="3" class="{{ ui.input }}">{{ profile.bio }}</textarea>
+    </label>
+    <label class="block text-sm font-medium">About (Markdown, optional)
+      <textarea name="about" rows="10" data-markdown class="{{ ui.input }}">{{ profile.about }}</textarea>
+    </label>
+    <label class="block text-sm font-medium">Tech stack badges <span class="font-normal text-slate-500">(comma-separated)</span>
+      <input name="tech_stack" value="{{ profile.tech_stack | join(', ') }}" class="{{ ui.input }}">
+    </label>
+    <div class="grid gap-5 sm:grid-cols-2">
+      <label class="block text-sm font-medium">CTA button label
+        <input name="cta_label" value="{{ profile.cta_label }}" class="{{ ui.input }}">
+      </label>
+      <label class="block text-sm font-medium">Location
+        <input name="location" value="{{ profile.location }}" class="{{ ui.input }}">
+      </label>
+    </div>
+    <label class="block text-sm font-medium">Résumé URL
+      <input name="resume_url" type="url" value="{{ profile.resume_url }}" class="{{ ui.input }}">
+    </label>
+  </div>
+
+  <aside class="space-y-5">
+    <fieldset class="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+      <legend class="px-1 text-sm font-semibold">Avatar</legend>
+      {{ uploader("avatar", "profile", [profile.avatar], label="Photo") }}
+      <label class="mt-4 flex items-center gap-2 text-sm"><input type="checkbox" name="available_for_work" {{ "checked" if profile.available_for_work }} class="rounded text-brand-600"> Show "Available for work"</label>
+      <button class="{{ ui.btn }} mt-5 w-full">Save profile</button>
+    </fieldset>
+    <fieldset class="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+      <legend class="px-1 text-sm font-semibold">Social links</legend>
+      {% for key, label in [("github", "GitHub"), ("linkedin", "LinkedIn"), ("twitter", "X / Twitter"), ("youtube", "YouTube")] %}
+      <label class="block text-sm font-medium">{{ label }}
+        <input name="social_{{ key }}" type="url" value="{{ profile.socials[key] }}" class="{{ ui.input }}">
+      </label>
+      {% endfor %}
+      <label class="block text-sm font-medium">Public email
+        <input name="social_email" type="email" value="{{ profile.socials.email }}" class="{{ ui.input }}">
+      </label>
+    </fieldset>
+  </aside>
+</form>
+{% endblock %}
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/easymde/2.18.0/easymde.min.js"></script>
+<script src="/static/js/admin.js"></script>
+{% endblock %}

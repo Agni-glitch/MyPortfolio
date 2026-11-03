@@ -1,0 +1,39 @@
+{% extends "admin/layout.html" %}
+{% block title %}Blog &amp; Vlogs{% endblock %}
+{% block admin_content %}
+<div class="flex flex-wrap items-center justify-between gap-3">
+  <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Blog &amp; Vlogs</h1>
+  <div class="flex gap-2">
+    <a href="/admin/posts/new" class="{{ ui.btn }}">+ New post</a>
+    <a href="/admin/posts/new?kind=vlog" class="{{ ui.btn_outline }}">+ New vlog</a>
+  </div>
+</div>
+{% if items %}
+<div class="mt-6 overflow-x-auto rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+  <table class="w-full text-left text-sm">
+    <thead class="border-b border-slate-200 text-xs uppercase text-slate-500 dark:border-slate-800">
+      <tr><th class="px-4 py-3">Title</th><th class="px-4 py-3">Type</th><th class="px-4 py-3">Status</th><th class="hidden px-4 py-3 md:table-cell">Published</th><th class="px-4 py-3"></th></tr>
+    </thead>
+    <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+      {% for item in items %}
+      <tr>
+        <td class="px-4 py-3">
+          <a href="/admin/posts/{{ item._id }}" class="font-medium text-slate-900 hover:underline dark:text-white">{{ item.title }}</a>
+          <p class="truncate text-xs text-slate-500">/blog/{{ item.slug }} · {{ item.reading_time }} min</p>
+        </td>
+        <td class="px-4 py-3 capitalize">{{ item.kind }}</td>
+        <td class="px-4 py-3">{% include "partials/status_badge.html" %}</td>
+        <td class="hidden px-4 py-3 text-slate-500 md:table-cell">{{ item.published_at | date }}</td>
+        <td class="whitespace-nowrap px-4 py-3 text-right">
+          {% if item.status == "published" %}<a href="/blog/{{ item.slug }}" target="_blank" class="mr-3 text-slate-500 hover:underline">View</a>{% endif %}
+          <a href="/admin/posts/{{ item._id }}" class="text-brand-600 hover:underline">Edit</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="mt-6 text-slate-500">No posts yet.</p>
+{% endif %}
+{% endblock %}

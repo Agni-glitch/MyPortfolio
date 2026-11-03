@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}{{ project.title }}{% endblock %}
+{% block description %}{{ project.summary }}{% endblock %}
+{% block og_image %}{% if project.thumbnail %}{{ project.thumbnail | cld(1200, 630) }}{% endif %}{% endblock %}
+
+{% block content %}
+<article class="mx-auto max-w-4xl px-4 py-14">
+  <a href="/projects" class="text-sm text-slate-500 hover:text-brand-600">← All projects</a>
+  {% if project.category %}<p class="mt-6 text-xs font-semibold uppercase tracking-wider text-brand-600 dark:text-brand-400">{{ project.category }}</p>{% endif %}
+  <h1 class="mt-2 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl dark:text-white">{{ project.title }}</h1>
+  {% if project.summary %}<p class="mt-4 text-lg text-slate-600 dark:text-slate-400">{{ project.summary }}</p>{% endif %}
+
+  <div class="mt-6 flex flex-wrap gap-3">
+    {% if project.live_url %}<a href="{{ project.live_url }}" target="_blank" rel="noopener" class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">Live demo ↗</a>{% endif %}
+    {% if project.repo_url %}<a href="{{ project.repo_url }}" target="_blank" rel="noopener" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-900">View source ↗</a>{% endif %}
+  </div>
+
+  {% if project.tech_stack %}
+  <ul class="mt-6 flex flex-wrap gap-2">
+    {% for t in project.tech_stack %}<li class="rounded-md bg-slate-100 px-2.5 py-1 font-mono text-xs text-slate-700 dark:bg-slate-800 dark:text-slate-300">{{ t }}</li>{% endfor %}
+  </ul>
+  {% endif %}
+
+  {% if project.thumbnail and not project.embed_url and not video_embed %}
+  <img src="{{ project.thumbnail | cld(1200) }}" srcset="{{ project.thumbnail | cld_srcset((640, 960, 1280, 1920)) }}" sizes="(min-width:896px) 896px, 100vw"
+       alt="{{ project.title }}" class="mt-10 w-full rounded-2xl border border-slate-200 dark:border-slate-800" fetchpriority="high">
+  {% endif %}
+
+  {% if video_embed %}
+  <div class="mt-10 aspect-video overflow-hidden rounded-2xl bg-black">
+    <iframe src="{{ video_embed }}" title="{{ project.title }} video" class="h-full w-full" loading="lazy"
+            allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  </div>
+  {% endif %}
+
+  {% if project.embed_url %}
+  <section class="mt-10">
+    <div class="flex items-center justify-between rounded-t-2xl border border-b-0 border-slate-200 bg-slate-100 px-4 py-2 dark:border-slate-800 dark:bg-slate-900">
+      <span class="flex gap-1.5"><span class="h-3 w-3 rounded-full bg-red-400"></span><span class="h-3 w-3 rounded-full bg-amber-400"></span><span class="h-3 w-3 rounded-full bg-emerald-400"></span></span>
+      <span class="truncate px-4 font-mono text-xs text-slate-500">Interactive preview</span>
+      <a href="{{ project.embed_url }}" target="_blank" rel="noopener" class="text-xs font-medium text-brand-600 hover:underline">Open ↗</a>
+    </div>
+    <div class="h-[70vh] min-h-[420px] overflow-hidden rounded-b-2xl border border-slate-200 bg-white dark:border-slate-800">
+      <iframe src="{{ project.embed_url }}" title="{{ project.title }} live preview" class="h-full w-full" loading="lazy"
+              sandbox="allow-scripts allow-same-origin allow-forms allow-popups" referrerpolicy="no-referrer"></iframe>
+    </div>
+  </section>
+  {% endif %}
+
+  {% if project.description %}
+  <div class="prose prose-slate prose-lg mt-12 max-w-none dark:prose-invert prose-a:text-brand-600 prose-img:rounded-xl">{{ project.description | markdown }}</div>
+  {% endif %}
+
+  {% if project.screenshots %}
+  <section class="mt-12">
+    <h2 class="mb-4 text-xl font-bold text-slate-900 dark:text-white">Screenshots</h2>
+    <div class="grid gap-4 sm:grid-cols-2">
+      {% for s in project.screenshots %}
+      <a href="{{ s | cld(1920) }}" target="_blank" rel="noopener" class="block overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800">
+        <img src="{{ s | cld(800, 500) }}" srcset="{{ s | cld_srcset((400, 800, 1200), 1.6) }}" sizes="(min-width:640px) 50vw, 100vw"
+             alt="{{ project.title }} screenshot {{ loop.index }}" loading="lazy" decoding="async" class="w-full transition hover:scale-[1.02]">
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</article>
+{% endblock %}

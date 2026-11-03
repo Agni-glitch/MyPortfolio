@@ -1,0 +1,19 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python",
+      "config": { "includeFiles": ["templates/**", "static/**", "core/**", "routes/**", "models/**", "utils/**"] }
+    },
+    { "src": "static/**", "use": "@vercel/static" }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "headers": { "Cache-Control": "public, max-age=31536000, immutable" },
+      "dest": "/static/$1"
+    },
+    { "src": "/(.*)", "dest": "api/index.py" }
+  ]
+}

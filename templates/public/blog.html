@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{{ "Vlogs" if active_kind == "vlog" else "Blog" }}{% if active_tag %} · #{{ active_tag }}{% endif %}{% if page > 1 %} · Page {{ page }}{% endif %}{% endblock %}
+{% block description %}Articles and vlogs by {{ profile.name }}.{% endblock %}
+
+
+{% block content %}
+{% macro chip(href, label, active) -%}
+<a href="{{ href }}" class="rounded-full border px-3 py-1 text-sm transition {{ 'border-brand-600 bg-brand-600 text-white' if active else 'border-slate-300 text-slate-600 hover:border-brand-400 dark:border-slate-700 dark:text-slate-300' }}"{% if active %} aria-current="true"{% endif %}>{{ label }}</a>
+{%- endmacro %}
+<section class="mx-auto max-w-6xl px-4 py-14">
+  <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">Blog &amp; Vlogs</h1>
+  <p class="mt-3 text-slate-600 dark:text-slate-400">Notes, tutorials and videos on what I'm building.</p>
+
+  <nav class="mt-8 flex flex-wrap gap-2" aria-label="Filter posts">
+    {{ chip("/blog", "All", not active_kind and not active_tag) }}
+    {{ chip("/blog?kind=blog", "Articles", active_kind == "blog") }}
+    {{ chip("/blog?kind=vlog", "Vlogs", active_kind == "vlog") }}
+    {% for t in tags %}{{ chip("/blog?tag=" ~ (t | urlencode), "#" ~ t, t == active_tag) }}{% endfor %}
+  </nav>
+
+  {% if posts %}
+  <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {% for p in posts %}{% include "partials/post_card.html" %}{% endfor %}
+  </div>
+  {% else %}
+  <p class="mt-10 text-slate-500">Nothing published here yet.</p>
+  {% endif %}
+
+  {% if pages > 1 %}
+  {% set qs = ("&kind=" ~ active_kind if active_kind else "") ~ ("&tag=" ~ (active_tag | urlencode) if active_tag else "") %}
+  <nav class="mt-12 flex items-center justify-center gap-4 text-sm" aria-label="Pagination">
+    {% if page > 1 %}<a href="/blog?page={{ page - 1 }}{{ qs }}" rel="prev" class="rounded-lg border border-slate-300 px-4 py-2 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-900">← Newer</a>{% endif %}
+    <span class="text-slate-500">Page {{ page }} of {{ pages }}</span>
+    {% if page < pages %}<a href="/blog?page={{ page + 1 }}{{ qs }}" rel="next" class="rounded-lg border border-slate-300 px-4 py-2 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-900">Older →</a>{% endif %}
+  </nav>
+  {% endif %}
+</section>
+{% endblock %}

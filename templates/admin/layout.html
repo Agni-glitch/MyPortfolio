@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block head_extra %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+{% block body %}
+{% set path = request.url.path %}
+{% macro side(href, label, exact=false) -%}
+  {%- set active = (path == href) if exact else path.startswith(href) -%}
+  <a href="{{ href }}" class="block rounded-lg px-3 py-2 text-sm font-medium {{ 'bg-brand-50 text-brand-700 dark:bg-brand-500/10 dark:text-brand-400' if active else 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800' }}">{{ label }}</a>
+{%- endmacro %}
+<div class="flex min-h-screen flex-col md:flex-row">
+  <aside class="border-b border-slate-200 bg-slate-50 md:sticky md:top-0 md:h-screen md:w-60 md:shrink-0 md:border-b-0 md:border-r dark:border-slate-800 dark:bg-slate-900/50">
+    <div class="flex items-center justify-between px-4 py-4">
+      <a href="/admin" class="font-bold text-slate-900 dark:text-white">CMS<span class="text-brand-500">.</span></a>
+      {% include "partials/theme_toggle.html" %}
+    </div>
+    <nav class="flex gap-1 overflow-x-auto px-3 pb-3 md:flex-col md:overflow-visible" aria-label="Admin">
+      {{ side("/admin", "Overview", true) }}
+      {{ side("/admin/projects", "Projects") }}
+      {{ side("/admin/posts", "Blog & Vlogs") }}
+      {{ side("/admin/messages", "Messages") }}
+      {{ side("/admin/profile", "Profile") }}
+      <a href="/" target="_blank" class="block whitespace-nowrap rounded-lg px-3 py-2 text-sm text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">View site ↗</a>
+      <form method="post" action="/admin/logout" class="md:mt-4">
+        <button class="w-full whitespace-nowrap rounded-lg px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950">Log out</button>
+      </form>
+    </nav>
+  </aside>
+  <main id="main" class="min-w-0 flex-1 px-4 py-8 md:px-10">
+    {% set flash = flash_from(request) %}
+    {% if flash %}<div class="mb-6 rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-200" role="status">{{ flash[1] }}</div>{% endif %}
+    {% if error %}<div class="mb-6 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300" role="alert">{{ error }}</div>{% endif %}
+    {% block admin_content %}{% endblock %}
+  </main>
+</div>
+{% endblock %}

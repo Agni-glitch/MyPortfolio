@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {%- set site = settings.site_name %}
+  {%- set page_title = self.title() | trim %}
+  {%- set full_title = (page_title ~ " · " ~ site) if page_title else site %}
+  {%- set page_desc = (self.description() | trim) or (profile.bio if profile else "") %}
+  {%- set canonical = settings.site_url.rstrip("/") ~ request.url.path %}
+  <title>{{ full_title }}</title>
+  <meta name="description" content="{{ page_desc | truncate(160) }}">
+  <link rel="canonical" href="{{ canonical }}">
+  <meta property="og:site_name" content="{{ site }}">
+  <meta property="og:title" content="{{ full_title }}">
+  <meta property="og:description" content="{{ page_desc | truncate(200) }}">
+  <meta property="og:url" content="{{ canonical }}">
+  <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+  {%- set og_img = self.og_image() | trim %}
+  {%- if og_img %}
+  <meta property="og:image" content="{{ og_img }}">
+  <meta name="twitter:card" content="summary_large_image">
+  {%- else %}
+  <meta name="twitter:card" content="summary">
+  {%- endif %}
+  <meta name="twitter:title" content="{{ full_title }}">
+  <meta name="twitter:description" content="{{ page_desc | truncate(200) }}">
+  {% block head_extra %}{% endblock %}
+
+  <script>
+    // Apply theme before first paint to avoid a flash.
+    (function () {
+      try {
+        var t = localStorage.getItem("theme");
+        var dark = t ? t === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.classList.toggle("dark", dark);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://res.cloudinary.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com/3.4.16?plugins=typography,forms"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          fontFamily: { sans: ["Inter", "system-ui", "sans-serif"], mono: ["JetBrains Mono", "monospace"] },
+          colors: { brand: { 50:"#eef2ff",100:"#e0e7ff",400:"#818cf8",500:"#6366f1",600:"#4f46e5",700:"#4338ca" } },
+        },
+      },
+    };
+  </script>
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body class="min-h-screen flex flex-col bg-white text-slate-800 antialiased dark:bg-slate-950 dark:text-slate-200">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-brand-600 focus:px-3 focus:py-2 focus:text-white">Skip to content</a>
+  {% block body %}
+  {% include "partials/nav.html" %}
+  <main id="main" class="flex-1">
+    {% set flash = flash_from(request) %}
+    {% if flash %}
+    <div class="mx-auto max-w-6xl px-4 pt-6">
+      <div class="rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-200" role="status">{{ flash[1] }}</div>
+    </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+  {% include "partials/footer.html" %}
+  {% endblock %}
+  <script src="/static/js/app.js" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
+{#- Metadata blocks: defined (not rendered) here, read above via self.<block>(). #}
+{%- if false %}{% block title %}{% endblock %}{% block description %}{% endblock %}{% block og_image %}{% if profile and profile.avatar %}{{ profile.avatar | cld(1200, 630) }}{% endif %}{% endblock %}{% endif %}

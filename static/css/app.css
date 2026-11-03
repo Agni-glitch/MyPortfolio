@@ -1,0 +1,28 @@
+/* Small additions on top of Tailwind (CDN). */
+:root { color-scheme: light; }
+.dark { color-scheme: dark; }
+
+.prose :where(h2, h3, h4) { scroll-margin-top: 5rem; }
+.prose pre { border-radius: 0.75rem; }
+.prose pre code.hljs { background: transparent; padding: 0; }
+
+details > summary::-webkit-details-marker { display: none; }
+
+/* EasyMDE dark mode */
+.dark .EasyMDEContainer .CodeMirror,
+.dark .editor-toolbar,
+.dark .editor-preview,
+.dark .editor-preview-side {
+  background: #0f172a; color: #e2e8f0; border-color: #334155;
+}
+.dark .editor-toolbar button { color: #cbd5e1 !important; }
+.dark .editor-toolbar button:hover,
+.dark .editor-toolbar button.active { background: #1e293b; border-color: #475569; }
+.dark .CodeMirror-cursor { border-left-color: #e2e8f0; }
+.dark .editor-statusbar { color: #64748b; }
+.EasyMDEContainer .CodeMirror { border-radius: 0 0 0.5rem 0.5rem; font-family: "JetBrains Mono", monospace; font-size: 0.875rem; }
+.editor-toolbar { border-radius: 0.5rem 0.5rem 0 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}

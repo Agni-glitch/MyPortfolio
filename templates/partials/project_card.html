@@ -1,0 +1,26 @@
+<article class="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-500/5 dark:border-slate-800 dark:bg-slate-900">
+  <a href="/projects/{{ p.slug }}" class="block aspect-[16/10] overflow-hidden bg-slate-100 dark:bg-slate-800">
+    {% if p.thumbnail %}
+    <img src="{{ p.thumbnail | cld(800, 500) }}" srcset="{{ p.thumbnail | cld_srcset((400, 800, 1200), 1.6) }}"
+         sizes="(min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
+         alt="{{ p.title }}" loading="lazy" decoding="async" width="800" height="500"
+         class="h-full w-full object-cover transition duration-500 group-hover:scale-105">
+    {% else %}
+    <div class="flex h-full items-center justify-center font-mono text-3xl font-bold text-slate-300 dark:text-slate-700">{{ p.title[:2] | upper }}</div>
+    {% endif %}
+  </a>
+  <div class="flex flex-1 flex-col p-5">
+    {% if p.category %}<p class="mb-1 text-xs font-semibold uppercase tracking-wider text-brand-600 dark:text-brand-400">{{ p.category }}</p>{% endif %}
+    <h3 class="text-lg font-semibold text-slate-900 dark:text-white"><a href="/projects/{{ p.slug }}" class="hover:underline">{{ p.title }}</a></h3>
+    <p class="mt-2 line-clamp-3 flex-1 text-sm text-slate-600 dark:text-slate-400">{{ p.summary }}</p>
+    {% if p.tags %}
+    <ul class="mt-4 flex flex-wrap gap-1.5">
+      {% for t in p.tags[:4] %}<li class="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-300">{{ t }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+    <div class="mt-4 flex gap-4 text-sm font-medium">
+      {% if p.live_url %}<a href="{{ p.live_url }}" target="_blank" rel="noopener" class="text-brand-600 hover:underline dark:text-brand-400">Live demo ↗</a>{% endif %}
+      {% if p.repo_url %}<a href="{{ p.repo_url }}" target="_blank" rel="noopener" class="text-slate-600 hover:underline dark:text-slate-300">Source ↗</a>{% endif %}
+    </div>
+  </div>
+</article>

@@ -1,0 +1,19 @@
+{% extends "admin/auth_base.html" %}
+{% block title %}Verify code{% endblock %}
+{% block heading %}Enter code &amp; new password{% endblock %}
+{% block form %}
+<form method="post" action="/admin/reset" class="space-y-4" data-submit-once>
+  <label class="block text-sm font-medium">6-digit code
+    <input name="code" required inputmode="numeric" pattern="\d{6}" maxlength="6" autocomplete="one-time-code"
+           class="{{ ui.input }} text-center font-mono text-2xl tracking-[0.5em]">
+  </label>
+  <label class="block text-sm font-medium">New password
+    <input name="password" type="password" required minlength="10" autocomplete="new-password" class="{{ ui.input }}">
+  </label>
+  <label class="block text-sm font-medium">Confirm password
+    <input name="confirm" type="password" required minlength="10" autocomplete="new-password" class="{{ ui.input }}">
+  </label>
+  <button class="w-full rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-60">Update password</button>
+</form>
+<p class="mt-5 text-sm text-slate-500">Code expires in {{ settings.otp_ttl_minutes }} minutes. <a href="/admin/forgot" class="text-brand-600 hover:underline">Resend</a></p>
+{% endblock %}

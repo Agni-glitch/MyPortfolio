@@ -1,0 +1,45 @@
+{% extends "admin/layout.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block admin_content %}
+<h1 class="text-2xl font-bold text-slate-900 dark:text-white">Overview</h1>
+
+{% set cards = [
+  ("Projects", stats.projects, stats.projects_published ~ " published", "/admin/projects"),
+  ("Blog posts", stats.posts, "articles", "/admin/posts"),
+  ("Vlogs", stats.vlogs, "videos", "/admin/posts"),
+  ("Messages", stats.messages, stats.unread ~ " unread", "/admin/messages"),
+] %}
+<div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+  {% for label, value, sub, href in cards %}
+  <a href="{{ href }}" class="rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-brand-400 dark:border-slate-800 dark:bg-slate-900">
+    <p class="text-sm text-slate-500">{{ label }}</p>
+    <p class="mt-1 text-3xl font-bold text-slate-900 dark:text-white">{{ value }}</p>
+    <p class="mt-1 text-xs text-slate-500">{{ sub }}</p>
+  </a>
+  {% endfor %}
+</div>
+{% if stats.drafts %}<p class="mt-4 text-sm text-amber-600">{{ stats.drafts }} item(s) in draft.</p>{% endif %}
+
+<div class="mt-8 flex flex-wrap gap-3">
+  <a href="/admin/projects/new" class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">+ New project</a>
+  <a href="/admin/posts/new" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800">+ New post</a>
+  <a href="/admin/posts/new?kind=vlog" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800">+ New vlog</a>
+</div>
+
+<h2 class="mt-10 text-lg font-semibold text-slate-900 dark:text-white">Recent messages</h2>
+{% if recent %}
+<ul class="mt-3 divide-y divide-slate-200 rounded-2xl border border-slate-200 bg-white dark:divide-slate-800 dark:border-slate-800 dark:bg-slate-900">
+  {% for m in recent %}
+  <li class="flex items-start justify-between gap-4 px-5 py-3">
+    <div class="min-w-0">
+      <p class="truncate text-sm font-medium {{ '' if m.read else 'text-slate-900 dark:text-white' }}">{% if not m.read %}<span class="mr-1 inline-block h-2 w-2 rounded-full bg-brand-500"></span>{% endif %}{{ m.name }} — {{ m.subject or "(no subject)" }}</p>
+      <p class="truncate text-sm text-slate-500">{{ m.body }}</p>
+    </div>
+    <span class="shrink-0 text-xs text-slate-500">{{ m.created_at | date }}</span>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="mt-3 text-sm text-slate-500">No messages yet.</p>
+{% endif %}
+{% endblock %}
