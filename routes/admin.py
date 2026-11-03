@@ -9,7 +9,7 @@ from core.deps import get_current_admin
 from core.templating import templates
 from models.schemas import BlogPost, Profile, Project, SocialLinks
 from routes.common import get_profile, oid, unique_slug
-from utils.media import delete_asset, upload_signature
+from utils.media import CloudinaryNotConfigured, delete_asset, upload_signature
 from utils.text import parse_tags, reading_time, slugify
 
 router = APIRouter(prefix="/admin", dependencies=[Depends(get_current_admin)])
@@ -54,8 +54,8 @@ async def sign_upload(request: Request):
         raise HTTPException(status_code=400, detail="Invalid upload kind")
     try:
         return JSONResponse(upload_signature(kind))
-    except Exception:
-        raise HTTPException(status_code=500, detail="Cloudinary is not configured")
+    except CloudinaryNotConfigured as e:
+        raise HTTPException(status_code=500, detail=f"Cloudinary is not configured: {e}")
 
 
 # ---------- Projects ----------

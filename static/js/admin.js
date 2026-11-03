@@ -58,7 +58,11 @@
       body: JSON.stringify({ kind: kind }),
     });
     if (res.status === 401) { window.location.href = "/admin/login"; throw new Error("Session expired"); }
-    if (!res.ok) throw new Error("Could not get upload signature");
+    if (!res.ok) {
+      var detail = "";
+      try { detail = (await res.json()).detail || ""; } catch (e) { /* non-JSON error page */ }
+      throw new Error("Could not get upload signature (HTTP " + res.status + ")" + (detail ? ": " + detail : ""));
+    }
     return res.json();
   }
 
