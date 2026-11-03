@@ -2,11 +2,11 @@ import math
 from xml.sax.saxutils import escape
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Request
-from fastapi.responses import PlainTextResponse, RedirectResponse, Response
+from fastapi.responses import JSONResponse, PlainTextResponse, RedirectResponse, Response
 from pydantic import ValidationError
 
 from core.config import get_settings
-from core.db import get_db
+from core.db import get_db, ping
 from core.limiter import client_ip, limiter
 from core.templating import templates
 from models.schemas import Message
@@ -22,7 +22,9 @@ POSTS_PER_PAGE = 9
 
 @router.get("/healthz", include_in_schema=False)
 async def healthz():
-    return {"ok": True}
+    # db=false after deploy usually means Atlas Network Access is blocking Vercel.
+    db_ok = await ping()
+    return JSONResponse({"ok": db_ok, "db": db_ok}, status_code=200 if db_ok else 503)
 
 
 @router.get("/")

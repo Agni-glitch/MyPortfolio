@@ -53,7 +53,7 @@
       },
     };
   </script>
-  <link rel="stylesheet" href="/static/css/app.css">
+  <link rel="stylesheet" href="/static/css/app.css?v={{ settings.asset_version }}">
 </head>
 <body class="min-h-screen flex flex-col bg-white text-slate-800 antialiased dark:bg-slate-950 dark:text-slate-200">
   <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-brand-600 focus:px-3 focus:py-2 focus:text-white">Skip to content</a>
@@ -70,7 +70,7 @@
   </main>
   {% include "partials/footer.html" %}
   {% endblock %}
-  <script src="/static/js/app.js" defer></script>
+  <script src="/static/js/app.js?v={{ settings.asset_version }}" defer></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>

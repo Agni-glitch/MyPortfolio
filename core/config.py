@@ -1,6 +1,7 @@
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,12 +26,29 @@ class Settings(BaseSettings):
     smtp_email: str = ""
     smtp_password: str = ""
 
-    site_url: str = "http://localhost:8000"
+    site_url: str = ""
     site_name: str = "My Portfolio"
     environment: str = "production"
 
     otp_ttl_minutes: int = 10
     otp_max_attempts: int = 5
+
+    # Provided automatically by Vercel at build and run time.
+    vercel_project_production_url: str = ""
+    vercel_git_commit_sha: str = ""
+
+    @model_validator(mode="after")
+    def _default_site_url(self):
+        if not self.site_url:
+            host = self.vercel_project_production_url
+            self.site_url = f"https://{host}" if host else "http://localhost:8000"
+        self.site_url = self.site_url.rstrip("/")
+        return self
+
+    @property
+    def asset_version(self) -> str:
+        """Cache-buster for /static URLs; changes on every deploy."""
+        return self.vercel_git_commit_sha[:8] or "dev"
 
     @property
     def is_production(self) -> bool:

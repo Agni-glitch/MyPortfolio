@@ -32,4 +32,4 @@
 <p class="mt-6 text-slate-500">No messages yet.</p>
 {% endif %}
 {% endblock %}
-{% block scripts %}<script src="/static/js/admin.js"></script>{% endblock %}
+{% block scripts %}<script src="/static/js/admin.js?v={{ settings.asset_version }}"></script>{% endblock %}

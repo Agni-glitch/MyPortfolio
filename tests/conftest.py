@@ -54,6 +54,11 @@ def outbox(monkeypatch):
     monkeypatch.setattr(routes.public, "send_email", fake_send)
     monkeypatch.setattr(routes.auth, "send_otp_email", fake_otp)
     monkeypatch.setattr(routes.admin, "delete_asset", fake_delete)
+
+    async def fake_ping():
+        return True
+
+    monkeypatch.setattr(routes.public, "ping", fake_ping)
     return sent
 
 

@@ -53,7 +53,7 @@ The tests use an in-memory fake database and stub out email and Cloudinary calls
 ```bash
 python -m venv .venv
 # Windows: .venv\Scripts\activate    macOS/Linux: source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-dev.txt   # app deps + uvicorn + pytest
 cp .env.example .env        # then fill in real values
 uvicorn api.index:app --reload
 ```
@@ -99,14 +99,22 @@ git push -u origin main
 
 ## 5. Deploy to Vercel
 
-1. Go to https://vercel.com/new and import the GitHub repo. Leave Framework Preset as **Other**; `vercel.json` handles the build.
-2. **Settings → Environment Variables**: add every key from `.env.example` with real values, and set:
-   - `ENVIRONMENT=production`, which turns on Secure cookies and HSTS and hides `/docs`
-   - `SITE_URL=https://your-domain.vercel.app`, used for canonical URLs, the sitemap and OpenGraph
-3. Deploy, then visit `https://your-domain/admin/register` once to create the admin account.
-4. Optional: add a custom domain, then update `SITE_URL`.
+1. Go to https://vercel.com/new, choose **Import Git Repository**, and pick the repo.
+2. On the configure screen, leave **Framework Preset** as **Other** and leave the build/output settings empty. `vercel.json` defines the build: `api/index.py` runs as a Python function, and `static/` is served from the CDN.
+3. Open **Environment Variables**. You can paste the whole contents of your local `.env` into the first *Key* field and Vercel splits it into separate variables. Then change two of them:
+   - `ENVIRONMENT=production`: turns on Secure cookies and HSTS and hides `/docs`. Without it, the admin login cookie isn't marked Secure.
+   - `SITE_URL`: delete it to use your `*.vercel.app` domain automatically, or set it to your custom domain (for example `https://agni.dev`).
+4. Click **Deploy**.
+5. Check `https://<your-app>.vercel.app/healthz`:
+   - `{"ok": true, "db": true}` means MongoDB is reachable.
+   - A 503 with `"db": false` almost always means Atlas **Network Access** doesn't allow `0.0.0.0/0` (see step 1 of the Atlas setup).
+6. Visit `/admin/register` once to create the admin account. Registration then closes permanently.
 
-Each push to `main` redeploys automatically; pull requests get preview URLs.
+Each push to `main` redeploys automatically, and pull requests get preview URLs. Static files get a new `?v=<commit>` query on every deploy, so browsers never keep stale CSS/JS.
+
+**If a deploy fails:**
+- `500 FUNCTION_INVOCATION_FAILED`: open the deployment → **Logs**. A `ValidationError … Field required` names a missing environment variable.
+- **Changed an environment variable?** Vercel only applies it to new deployments. Go to **Deployments → ⋯ → Redeploy**.
 
 ## License
 
